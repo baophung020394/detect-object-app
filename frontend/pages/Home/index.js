@@ -1,4 +1,4 @@
-import { Box, Image } from "@chakra-ui/react";
+import { Box, Image, Spinner } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function Home() {
@@ -7,6 +7,7 @@ export default function Home() {
   const previousFrameRef = useRef(null);
   const [socket, setSocket] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // State for loading spinner
   const lastFrameTimeRef = useRef(0);
   const imageUrlRef = useRef(null);
 
@@ -45,6 +46,7 @@ export default function Home() {
 
         imageUrlRef.current = imageUrl;
         setImageSrc(imageUrl);
+        setIsLoading(false); // Stop loading spinner when the first image is received
       };
 
       socket.onclose = () => {
@@ -141,21 +143,25 @@ export default function Home() {
         style={{ display: "none" }}
       />
       <Box
-        width="1000px"
-        height="1000px"
+        width="800px"
+        height="800px"
         display="flex"
         justifyContent="center"
         alignItems="center"
+        border="2px solid"
+        borderColor="gray.300"
+        borderRadius="md"
       >
-        {imageSrc && (
-          <Image
-            border="2px solid"
-            borderColor="gray.300"
-            borderRadius="md"
-            src={imageSrc}
-            alt="Processed frame"
-            style={{ maxWidth: "100%", maxHeight: "100%", display: "block" }}
-          />
+        {isLoading ? (
+          <Spinner size="xl" />
+        ) : (
+          imageSrc && (
+            <Image
+              src={imageSrc}
+              alt="Processed frame"
+              style={{ maxWidth: "100%", maxHeight: "100%", display: "block" }}
+            />
+          )
         )}
       </Box>
     </Box>
